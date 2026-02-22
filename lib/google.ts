@@ -11,12 +11,12 @@ export async function getDriveClient() {
     throw new Error('Google Service Account credentials are missing in environment variables.');
   }
   
-  const auth = new google.auth.JWT(
+  // Using the options object pattern to satisfy TypeScript definitions in newer googleapis versions
+  const auth = new google.auth.JWT({
     email,
-    undefined,
-    privateKey,
-    SCOPES
-  );
+    key: privateKey,
+    scopes: SCOPES,
+  });
 
   return google.drive({ version: 'v3', auth });
 }
