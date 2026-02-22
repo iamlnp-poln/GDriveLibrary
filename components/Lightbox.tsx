@@ -1,10 +1,11 @@
+'use client';
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { GDriveFile } from '../types';
-import { formatBytes } from '../lib/utils';
+import { GDriveFile } from '@/types';
+import { formatBytes } from '@/lib/utils';
 
 interface LightboxProps {
   files: GDriveFile[];
