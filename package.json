@@ -15,8 +15,8 @@
     "react-dom": "latest",
     "firebase": "latest",
     "firebase-admin": "latest",
-    "googleapis": "^latest",
-    "framer-motion": "^latest",
+    "googleapis": "latest",
+    "framer-motion": "latest",
     "jszip": "latest",
     "file-saver": "latest",
     "react-zoom-pan-pinch": "latest",
@@ -33,6 +33,6 @@
     "@types/file-saver": "latest",
     "autoprefixer": "latest",
     "postcss": "latest",
-    "tailwindcss": "^latest"
+    "tailwindcss": "latest"
   }
 }
