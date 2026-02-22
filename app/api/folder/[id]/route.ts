@@ -4,11 +4,9 @@ import { listFolderFiles } from '../../../../lib/google';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  // Handle both sync and async params for compatibility
-  const resolvedParams = await params;
-  const folderId = resolvedParams.id;
+  const { id: folderId } = await params;
 
   if (!folderId) {
     return NextResponse.json({ error: 'Folder ID is required' }, { status: 400 });

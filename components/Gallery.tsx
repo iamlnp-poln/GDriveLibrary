@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useParams } from 'next/navigation';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -75,7 +75,7 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         const filesResponse = await fetch(`/api/folder/${data.folderId}`);
         if (!filesResponse.ok) {
           const errorData = await filesResponse.json();
-          throw new Error(errorData.details || "Failed to fetch folder contents. Make sure the folder is shared with the service account.");
+          throw new Error(errorData.details || "Failed to fetch folder contents.");
         }
         
         const driveFiles: GDriveFile[] = await filesResponse.json();
@@ -125,17 +125,7 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         }
         const content = await zip.generateAsync({ type: "blob" });
         const saveAs = (FileSaver as any).saveAs || FileSaver;
-        if (typeof saveAs === 'function') {
-          saveAs(content, `${linkData?.title || 'gallery'}-photos.zip`);
-        } else {
-          const url = window.URL.createObjectURL(content);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${linkData?.title || 'gallery'}-photos.zip`;
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-        }
+        saveAs(content, `${linkData?.title || 'gallery'}-photos.zip`);
       } else {
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i];
@@ -188,14 +178,6 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         </div>
         <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Access Denied or Error</h2>
         <p className="text-slate-500 dark:text-white/50 mb-8 leading-relaxed">{error}</p>
-        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-left">
-          <p className="font-bold mb-2">Troubleshooting:</p>
-          <ul className="list-disc list-inside space-y-1 text-slate-400">
-            <li>Ensure the folder ID is correct.</li>
-            <li>Share the folder with the service account email.</li>
-            <li>Check if the service account has "Viewer" permissions.</li>
-          </ul>
-        </div>
       </div>
     );
   }

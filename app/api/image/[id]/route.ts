@@ -4,10 +4,9 @@ import { getFileStream } from '../../../../lib/google';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const resolvedParams = await params;
-  const fileId = resolvedParams.id;
+  const { id: fileId } = await params;
 
   try {
     const { stream, contentType } = await getFileStream(fileId);
