@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { GDriveLink, GDriveFile } from '@/types';
+import { db } from '../lib/firebase';
+import { GDriveLink, GDriveFile } from '../types';
 import { Download, CheckCircle2, Circle, X, Grid, Share2, Check, FileArchive, Files, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from './Lightbox';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import Skeleton from './ui/Skeleton';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface GalleryProps {
   previewData?: {
