@@ -1,6 +1,8 @@
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { GDriveLink, GDriveFile } from '../types';
@@ -22,7 +24,9 @@ interface GalleryProps {
 type DownloadMode = 'individual' | 'zip';
 
 const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
-  const { shortId } = useParams<{ shortId: string }>();
+  const params = useParams();
+  const shortId = params?.shortId as string;
+  
   const [linkData, setLinkData] = useState<GDriveLink | null>(null);
   const [files, setFiles] = useState<GDriveFile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +125,17 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         }
         const content = await zip.generateAsync({ type: "blob" });
         const saveAs = (FileSaver as any).saveAs || FileSaver;
-        saveAs(content, `${linkData?.title || 'gallery'}-photos.zip`);
+        if (typeof saveAs === 'function') {
+          saveAs(content, `${linkData?.title || 'gallery'}-photos.zip`);
+        } else {
+          const url = window.URL.createObjectURL(content);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${linkData?.title || 'gallery'}-photos.zip`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
       } else {
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i];
