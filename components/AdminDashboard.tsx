@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { collection, addDoc, query, onSnapshot, deleteDoc, doc, orderBy, where, getDocs } from 'firebase/firestore';
-import { db, logout } from '../lib/firebase';
-import { GDriveLink } from '../types';
-import { slugify, cn } from '../lib/utils';
+import { db, logout } from '@/lib/firebase';
+import { GDriveLink } from '@/types';
+import { slugify, cn } from '@/lib/utils';
 import { Plus, Trash2, ExternalLink, Copy, Check, LogOut, FolderOpen, Eye, X, Layout, AlertTriangle, Loader2, CheckCircle, Info, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Gallery from './Gallery';
