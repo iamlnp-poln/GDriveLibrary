@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -118,8 +117,6 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
   };
 
   const copyLink = (sId: string) => {
-    // Algorithm update: Ensure no hash (#) is included in the copied URL
-    // Next.js App Router uses standard paths.
     const url = `${window.location.origin}/s/${sId}`;
     navigator.clipboard.writeText(url);
     setCopiedId(sId);
@@ -132,7 +129,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 relative">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative overflow-x-hidden">
       {/* Notification Toast */}
       <AnimatePresence>
         {notification && (
@@ -141,14 +138,14 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: -20, x: '-50%' }}
             className={cn(
-              "fixed top-24 left-1/2 z-[100] px-6 py-3 rounded-full shadow-xl flex items-center gap-3 border",
+              "fixed top-20 sm:top-24 left-1/2 z-[100] w-[90%] sm:w-auto px-6 py-3 rounded-full shadow-xl flex items-center justify-center gap-3 border",
               notification.type === 'success' 
                 ? "bg-green-500 text-white border-green-600" 
                 : "bg-red-500 text-white border-red-600"
             )}
           >
-            {notification.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
-            <span className="font-medium">{notification.message}</span>
+            {notification.type === 'success' ? <CheckCircle className="w-5 h-5 shrink-0" /> : <AlertTriangle className="w-5 h-5 shrink-0" />}
+            <span className="font-medium text-sm sm:text-base">{notification.message}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -162,7 +159,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[110] bg-black/50 backdrop-blur-sm flex items-center justify-center"
           >
-            <div className="bg-white dark:bg-[#1a1a1a] p-8 rounded-3xl shadow-2xl flex flex-col items-center gap-4">
+            <div className="bg-white dark:bg-[#1a1a1a] p-6 sm:p-8 rounded-3xl shadow-2xl flex flex-col items-center gap-4">
               <Loader2 className="w-10 h-10 text-slate-900 dark:text-white animate-spin" />
               <p className="text-slate-900 dark:text-white font-medium">Processing...</p>
             </div>
@@ -186,13 +183,13 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
               className="bg-white dark:bg-[#1a1a1a] w-full max-w-md p-6 rounded-3xl shadow-2xl border border-slate-200 dark:border-white/10"
             >
               <div className="flex items-center gap-4 mb-6 text-red-500">
-                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
                   <Trash2 className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Delete Link?</h3>
               </div>
               
-              <p className="text-slate-500 dark:text-white/60 mb-8">
+              <p className="text-slate-500 dark:text-white/60 mb-8 text-sm sm:text-base">
                 Are you sure you want to delete this gallery link? This action cannot be undone.
               </p>
 
@@ -215,10 +212,10 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center justify-between mb-12">
+      <div className="flex items-center justify-between mb-8 sm:mb-12">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard</h1>
-          <p className="text-slate-500 dark:text-white/50">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard</h1>
+          <p className="text-slate-500 dark:text-white/50 text-sm sm:text-base">
             Manage your shared galleries &bull;{' '}
             <a 
               href="https://www.instagram.com/_iamlnp_/" 
@@ -232,7 +229,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
         </div>
         <button 
           onClick={() => logout()}
-          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"
+          className="p-2.5 rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"
           title="Logout"
         >
           <LogOut className="w-5 h-5" />
@@ -240,20 +237,20 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       </div>
 
       {/* Critical Instruction Box */}
-      <div className="mb-12 p-6 rounded-3xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex flex-col md:flex-row items-start md:items-center gap-6">
+      <div className="mb-8 sm:mb-12 p-5 sm:p-6 rounded-3xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
         <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
           <ShieldAlert className="w-6 h-6 text-white" />
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-bold text-amber-900 dark:text-amber-400 mb-1">Important: Share your GDrive Folder</h3>
-          <p className="text-amber-800/70 dark:text-amber-400/60 text-sm leading-relaxed">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-400 mb-1">Important: Share your GDrive Folder</h3>
+          <p className="text-amber-800/70 dark:text-amber-400/60 text-xs sm:text-sm leading-relaxed">
             For the gallery to load real images, you <strong>must</strong> share your Google Drive folder with the service account email below as a <strong>Viewer</strong>.
           </p>
-          <div className="mt-3 flex items-center gap-2">
-            <code className="bg-white/50 dark:bg-black/30 px-3 py-1.5 rounded-lg text-xs font-mono text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-500/20">
+          <div className="mt-3 flex items-center gap-2 w-full">
+            <code className="flex-1 bg-white/50 dark:bg-black/30 px-3 py-2 rounded-lg text-[10px] sm:text-xs font-mono text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-500/20 break-all overflow-hidden">
               {SERVICE_ACCOUNT_EMAIL}
             </code>
-            <button onClick={copyServiceEmail} className="p-1.5 hover:bg-amber-500/10 rounded-lg text-amber-700 dark:text-amber-400 transition-colors">
+            <button onClick={copyServiceEmail} className="p-2 hover:bg-amber-500/10 rounded-lg text-amber-700 dark:text-amber-400 transition-colors shrink-0">
               <Copy className="w-4 h-4" />
             </button>
           </div>
@@ -263,7 +260,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Create Form */}
         <div className="lg:col-span-4">
-          <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 sticky top-24 shadow-sm dark:shadow-none">
+          <div className="p-5 sm:p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 lg:sticky lg:top-24 shadow-sm dark:shadow-none">
             <h2 className="text-lg font-semibold mb-6 flex items-center gap-2 text-slate-900 dark:text-white">
               <Plus className="w-5 h-5" />
               Create New Link
@@ -276,7 +273,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Persona Albume"
-                  className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white"
+                  className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white text-sm sm:text-base"
                   required
                 />
               </div>
@@ -304,16 +301,16 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
                   value={folderId}
                   onChange={(e) => setFolderId(e.target.value)}
                   placeholder="Google Drive Folder ID"
-                  className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white"
+                  className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white text-sm sm:text-base"
                   required
                 />
               </div>
               
-              <div className="pt-2 flex gap-2">
+              <div className="pt-2 flex flex-col sm:flex-row gap-2">
                 <button 
                   type="button"
                   onClick={() => setShowPreview(true)}
-                  className="flex-1 py-3 bg-slate-200 dark:bg-white/5 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-slate-200 dark:bg-white/5 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
                   <Eye className="w-4 h-4" />
                   Preview
@@ -321,7 +318,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
                 <button 
                   type="submit"
                   disabled={isProcessing}
-                  className="flex-[2] py-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-slate-200 dark:shadow-none"
+                  className="flex-[2] py-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-slate-200 dark:shadow-none text-sm sm:text-base"
                 >
                   {isProcessing ? "Creating..." : "Generate Link"}
                 </button>
@@ -341,19 +338,19 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="group p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all flex items-center justify-between shadow-sm dark:shadow-none"
+                  className="group p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm dark:shadow-none"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-white/40 group-hover:text-slate-900 dark:group-hover:text-white transition-colors shadow-sm dark:shadow-none">
-                      <FolderOpen className="w-6 h-6" />
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-white/40 group-hover:text-slate-900 dark:group-hover:text-white transition-colors shadow-sm dark:shadow-none shrink-0">
+                      <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{link.title}</h3>
-                      <p className="text-sm text-slate-400 dark:text-white/40">/s/{link.shortId}</p>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-slate-900 dark:text-white truncate text-sm sm:text-base">{link.title}</h3>
+                      <p className="text-xs sm:text-sm text-slate-400 dark:text-white/40 truncate">/s/{link.shortId}</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-end gap-1 sm:gap-2">
                     <button 
                       onClick={() => copyLink(link.shortId)}
                       className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -382,7 +379,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
 
             {links.length === 0 && (
               <div className="py-20 text-center border-2 border-dashed border-slate-200 dark:border-white/5 rounded-3xl">
-                <p className="text-slate-300 dark:text-white/20">No links created yet.</p>
+                <p className="text-slate-300 dark:text-white/20 text-sm sm:text-base">No links created yet.</p>
               </div>
             )}
           </div>
@@ -398,10 +395,10 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-white dark:bg-black flex flex-col"
           >
-            <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md">
+            <div className="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 <Layout className="w-5 h-5 text-slate-400 dark:text-white/40" />
-                <span className="font-bold text-slate-900 dark:text-white">Live Preview</span>
+                <span className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">Live Preview</span>
               </div>
               <button 
                 onClick={() => setShowPreview(false)}
@@ -416,7 +413,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
               
               <div className="max-w-5xl mx-auto pb-20 px-4">
                 <div className="p-8 rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/5 text-center">
-                  <p className="text-slate-300 dark:text-white/20 font-medium">
+                  <p className="text-slate-300 dark:text-white/20 font-medium text-sm sm:text-base">
                     This is a live preview of how your gallery will look to guests.
                   </p>
                 </div>
