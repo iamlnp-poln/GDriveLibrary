@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -81,13 +82,12 @@ const GalleryItem = React.memo(({
           loading="lazy"
         />
 
-        {/* Filename Overlay - Always visible on hover or if picked/selected */}
+        {/* Filename Overlay - Always visible */}
         <div className={cn(
-          "absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 z-20",
-          isLoaded ? "opacity-0 group-hover:opacity-100" : "opacity-0",
-          (isSelected || isPicked) && "opacity-100"
+          "absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-300 z-20",
+          isLoaded ? "opacity-100" : "opacity-0"
         )}>
-          <p className="text-white text-[10px] font-medium truncate drop-shadow-sm">
+          <p className="text-white text-[10px] font-medium truncate drop-shadow-md">
             {file.name}
           </p>
         </div>
@@ -95,7 +95,7 @@ const GalleryItem = React.memo(({
         {isPickingMode && isLoaded && (
           <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center opacity-10 select-none overflow-hidden">
             <div className="rotate-[-45deg] text-slate-900 dark:text-white font-bold text-xl whitespace-nowrap tracking-[0.5em] uppercase">
-              Poln's Gallery • @_iamlnp_
+              Poln by @_iamlnp_
             </div>
           </div>
         )}
@@ -115,8 +115,8 @@ const GalleryItem = React.memo(({
             <button 
               onClick={(e) => onTogglePick(file.id, e)}
               className={cn(
-                "absolute top-3 right-3 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all transform hover:scale-110 shadow-lg",
-                isPicked ? "bg-red-500 text-white" : "bg-white/20 text-white border border-white/30"
+                "absolute top-3 right-3 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all transform hover:scale-110 shadow-lg z-40",
+                isPicked ? "bg-red-500 text-white opacity-100" : "bg-white/20 text-white border border-white/30 opacity-100"
               )}
             >
               <Heart className={cn("w-5 h-5", isPicked && "fill-current")} />
@@ -305,7 +305,7 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="text-4xl font-bold tracking-tight mb-2 text-slate-900 dark:text-white">{linkData?.title}</h1>
           <p className="text-slate-400 dark:text-white/40 flex items-center gap-2 text-sm">
-            {files.length} Photos &bull; Poln by{' '}
+            Poln by{' '}
             <a href="https://www.instagram.com/_iamlnp_/" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors underline underline-offset-4 font-medium">@_iamlnp_</a>
           </p>
         </motion.div>
@@ -314,25 +314,6 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
           {!isPickingMode && (
             <>
               <button onClick={() => { setIsSelectionMode(!isSelectionMode); if (isSelectionMode) setSelectedIds(new Set()); }} className={cn("flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm font-medium", isSelectionMode ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-black dark:border-white" : "bg-slate-100 border-slate-200 text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10")}>{isSelectionMode ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}{isSelectionMode ? `Selected (${selectedIds.size})` : "Select"}</button>
-              {selectedIds.size > 0 && (
-                <button 
-                  onClick={handleDownloadSelected} 
-                  disabled={isDownloading} 
-                  className="flex items-center gap-2 px-6 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-slate-200 dark:shadow-none"
-                >
-                  {isDownloading ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-white/20 dark:border-black/20 border-t-white dark:border-t-black rounded-full animate-spin" />
-                      {downloadProgress}%
-                    </span>
-                  ) : (
-                    <>
-                      <FileArchive className="w-4 h-4" />
-                      Download Zip
-                    </>
-                  )}
-                </button>
-              )}
             </>
           )}
           
@@ -357,22 +338,42 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
         ))}
       </div>
 
-      {/* Floating Export Pill for Picking Mode */}
+      {/* Floating Pill for Picking Mode or Download Mode */}
       <AnimatePresence>
-        {isPickingMode && pickedIds.size > 0 && (
+        {((isPickingMode && pickedIds.size > 0) || (!isPickingMode && selectedIds.size > 0)) && (
           <motion.div 
             initial={{ y: 100, opacity: 0, x: '-50%' }}
             animate={{ y: 0, opacity: 1, x: '-50%' }}
             exit={{ y: 100, opacity: 0, x: '-50%' }}
             className="fixed bottom-8 left-1/2 z-50 px-4 w-full max-w-xs"
           >
-            <button 
-              onClick={exportPickedList}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-red-500 text-white font-bold rounded-full shadow-2xl shadow-red-500/40 hover:bg-red-600 transition-all active:scale-95"
-            >
-              <FileText className="w-5 h-5" />
-              Export List ({pickedIds.size})
-            </button>
+            {isPickingMode ? (
+              <button 
+                onClick={exportPickedList}
+                className="w-full flex items-center justify-center gap-3 py-4 bg-red-500 text-white font-bold rounded-full shadow-2xl shadow-red-500/40 hover:bg-red-600 transition-all active:scale-95"
+              >
+                <FileText className="w-5 h-5" />
+                Export List ({pickedIds.size})
+              </button>
+            ) : (
+              <button 
+                onClick={handleDownloadSelected} 
+                disabled={isDownloading} 
+                className="w-full flex items-center justify-center gap-3 py-4 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-full shadow-2xl shadow-black/20 dark:shadow-white/10 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isDownloading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/20 dark:border-black/20 border-t-white dark:border-t-black rounded-full animate-spin" />
+                    {downloadProgress}%
+                  </span>
+                ) : (
+                  <>
+                    <FileArchive className="w-5 h-5" />
+                    Download .zip ({selectedIds.size})
+                  </>
+                )}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

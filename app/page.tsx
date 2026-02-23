@@ -14,8 +14,8 @@ export default function Home() {
         className="max-w-2xl"
       >
         <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter text-slate-900 dark:text-white">
-          Your Private <br />
-          <span className="text-slate-300 dark:text-white/40">Photo Library.</span>
+          Poln's Gallery <br />
+          <span className="text-slate-300 dark:text-white/40">by @_iamlnp_</span>
         </h1>
         <p className="text-lg text-slate-500 dark:text-white/50 mb-8 max-w-md mx-auto">
           Securely share Google Drive folders with beautiful, minimalist galleries. No login required for guests.

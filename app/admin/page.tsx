@@ -57,7 +57,7 @@ const AdminLogin = () => {
       >
         <ShieldCheck className="w-12 h-12 mx-auto mb-6 text-slate-300 dark:text-white/40" />
         <h2 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Admin Access</h2>
-        <p className="text-slate-500 dark:text-white/50 mb-8">Sign in to manage your library.</p>
+        <p className="text-slate-500 dark:text-white/50 mb-8">Poln by @_iamlnp_</p>
         
         {error && (
           <div className="mb-6 p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">

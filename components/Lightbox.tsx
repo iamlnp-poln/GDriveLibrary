@@ -92,7 +92,8 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, isPickingMode,
         <TransformWrapper initialScale={1} minScale={0.5} maxScale={4} centerOnInit>
           {({ zoomIn, zoomOut, resetTransform }) => (
             <>
-              <div className="absolute bottom-8 left-1/2 -translate-y-1/2 z-20 flex items-center gap-2 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white">
+              {/* Fixed Toolbar Alignment */}
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white">
                 <button onClick={() => zoomOut()} className="p-2 hover:bg-white/10 rounded-full transition-colors"><ZoomOut className="w-4 h-4" /></button>
                 <button onClick={() => resetTransform()} className="p-2 hover:bg-white/10 rounded-full transition-colors"><Maximize className="w-4 h-4" /></button>
                 <button onClick={() => zoomIn()} className="p-2 hover:bg-white/10 rounded-full transition-colors"><ZoomIn className="w-4 h-4" /></button>
@@ -127,7 +128,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, isPickingMode,
                   {isPickingMode && isHighResLoaded && (
                     <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center opacity-10 select-none overflow-hidden">
                       <div className="rotate-[-45deg] text-white font-bold text-5xl whitespace-nowrap tracking-[1em] uppercase">
-                        Poln's Gallery • @_iamlnp_
+                        Poln by @_iamlnp_
                       </div>
                     </div>
                   )}

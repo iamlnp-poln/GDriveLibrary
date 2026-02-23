@@ -85,6 +85,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       setTitle(""); setShortId(""); setFolderId(""); setIsManualShortId(false); setIsPickingMode(false);
       setNotification({ type: 'success', message: 'Gallery link created successfully!' });
     } catch (err) {
+      console.error(err);
       setNotification({ type: 'error', message: 'Failed to create link.' });
     } finally {
       setIsProcessing(false);
@@ -98,6 +99,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       await deleteDoc(doc(db, "links", deleteId));
       setNotification({ type: 'success', message: 'Link deleted successfully.' });
     } catch (err) {
+      console.error(err);
       setNotification({ type: 'error', message: 'Failed to delete link.' });
     } finally {
       setIsProcessing(false);
@@ -156,7 +158,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       <div className="flex items-center justify-between mb-12">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard</h1>
-          <p className="text-slate-500 dark:text-white/50">Manage your shared galleries &bull; @_iamlnp_</p>
+          <p className="text-slate-500 dark:text-white/50">Poln by @_iamlnp_</p>
         </div>
         <button onClick={() => logout()} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors" title="Logout"><LogOut className="w-5 h-5" /></button>
       </div>

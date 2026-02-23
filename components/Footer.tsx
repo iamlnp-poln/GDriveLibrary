@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="py-12 border-t border-slate-100 dark:border-white/5 text-center text-slate-400 dark:text-white/30 text-sm">
       <p>
-        Project GDrive Library &bull; Poln by{' '}
+        Poln by{' '}
         <a 
           href="https://www.instagram.com/_iamlnp_/" 
           target="_blank" 
