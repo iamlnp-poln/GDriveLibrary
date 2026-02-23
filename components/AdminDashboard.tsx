@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { collection, addDoc, query, onSnapshot, deleteDoc, doc, orderBy, where, 
 import { db, logout } from '../lib/firebase';
 import { GDriveLink } from '../types';
 import { slugify, cn } from '../lib/utils';
-import { Plus, Trash2, ExternalLink, Copy, Check, LogOut, FolderOpen, Eye, X, Layout, AlertTriangle, Loader2, CheckCircle, Info, ShieldAlert } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Copy, Check, LogOut, FolderOpen, Eye, X, Layout, AlertTriangle, Loader2, CheckCircle, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Gallery from './Gallery';
 
@@ -41,6 +42,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
     }
   }, [title, isManualShortId]);
 
+  // Auto-dismiss notification
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => setNotification(null), 3000);
@@ -61,6 +63,8 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
     setIsProcessing(true);
     try {
       const finalShortId = slugify(shortId);
+      
+      // Check for duplicates
       const exists = await checkShortIdExists(finalShortId);
       if (exists) {
         setNotification({ type: 'error', message: `Short ID "${finalShortId}" already exists.` });
@@ -94,7 +98,9 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
-  const handleDeleteClick = (id: string) => setDeleteId(id);
+  const handleDeleteClick = (id: string) => {
+    setDeleteId(id);
+  };
 
   const confirmDelete = async () => {
     if (!deleteId) return;
@@ -112,7 +118,9 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
   };
 
   const copyLink = (sId: string) => {
-    const url = `${window.location.origin}/#/s/${sId}`;
+    // Algorithm update: Ensure no hash (#) is included in the copied URL
+    // Next.js App Router uses standard paths.
+    const url = `${window.location.origin}/s/${sId}`;
     navigator.clipboard.writeText(url);
     setCopiedId(sId);
     setTimeout(() => setCopiedId(null), 2000);
@@ -183,12 +191,24 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Delete Link?</h3>
               </div>
+              
               <p className="text-slate-500 dark:text-white/60 mb-8">
                 Are you sure you want to delete this gallery link? This action cannot be undone.
               </p>
+
               <div className="flex gap-3">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-semibold bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">Cancel</button>
-                <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl font-semibold bg-red-500 text-white hover:bg-red-600 transition-colors">Delete</button>
+                <button
+                  onClick={() => setDeleteId(null)}
+                  className="flex-1 py-3 rounded-xl font-semibold bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 py-3 rounded-xl font-semibold bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
+                  Delete
+                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -198,9 +218,23 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       <div className="flex items-center justify-between mb-12">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard</h1>
-          <p className="text-slate-500 dark:text-white/50">Manage your shared galleries &bull; @_iamlnp_</p>
+          <p className="text-slate-500 dark:text-white/50">
+            Manage your shared galleries &bull;{' '}
+            <a 
+              href="https://www.instagram.com/_iamlnp_/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-slate-900 dark:hover:text-white transition-colors underline underline-offset-4"
+            >
+              @_iamlnp_
+            </a>
+          </p>
         </div>
-        <button onClick={() => logout()} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors" title="Logout">
+        <button 
+          onClick={() => logout()}
+          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"
+          title="Logout"
+        >
           <LogOut className="w-5 h-5" />
         </button>
       </div>
@@ -227,6 +261,7 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Create Form */}
         <div className="lg:col-span-4">
           <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 sticky top-24 shadow-sm dark:shadow-none">
             <h2 className="text-lg font-semibold mb-6 flex items-center gap-2 text-slate-900 dark:text-white">
@@ -236,62 +271,156 @@ const AdminDashboard: React.FC<{ user: User }> = ({ user }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-400 dark:text-white/40 uppercase tracking-wider mb-1.5 ml-1">Gallery Title</label>
-                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Persona Albume" className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white" required />
+                <input 
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Persona Albume"
+                  className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white"
+                  required
+                />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-400 dark:text-white/40 uppercase tracking-wider mb-1.5 ml-1">Short ID (Editable)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-white/30 text-sm">/s/</span>
-                  <input type="text" value={shortId} onChange={(e) => { setShortId(e.target.value); setIsManualShortId(true); }} placeholder="persona-albume" className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl pl-8 pr-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white text-sm" required />
+                  <input 
+                    type="text"
+                    value={shortId}
+                    onChange={(e) => {
+                      setShortId(e.target.value);
+                      setIsManualShortId(true);
+                    }}
+                    placeholder="persona-albume"
+                    className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl pl-8 pr-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white text-sm"
+                    required
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-400 dark:text-white/40 uppercase tracking-wider mb-1.5 ml-1">Folder ID or URL</label>
-                <input type="text" value={folderId} onChange={(e) => setFolderId(e.target.value)} placeholder="Google Drive Folder ID" className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white" required />
+                <input 
+                  type="text"
+                  value={folderId}
+                  onChange={(e) => setFolderId(e.target.value)}
+                  placeholder="Google Drive Folder ID"
+                  className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-slate-400 dark:focus:border-white/30 transition-colors text-slate-900 dark:text-white"
+                  required
+                />
               </div>
+              
               <div className="pt-2 flex gap-2">
-                <button type="button" onClick={() => setShowPreview(true)} className="flex-1 py-3 bg-slate-200 dark:bg-white/5 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2"><Eye className="w-4 h-4" />Preview</button>
-                <button type="submit" disabled={isProcessing} className="flex-[2] py-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-slate-200 dark:shadow-none">{isProcessing ? "Creating..." : "Generate Link"}</button>
+                <button 
+                  type="button"
+                  onClick={() => setShowPreview(true)}
+                  className="flex-1 py-3 bg-slate-200 dark:bg-white/5 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  Preview
+                </button>
+                <button 
+                  type="submit"
+                  disabled={isProcessing}
+                  className="flex-[2] py-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-slate-200 dark:shadow-none"
+                >
+                  {isProcessing ? "Creating..." : "Generate Link"}
+                </button>
               </div>
             </form>
           </div>
         </div>
 
+        {/* Links List */}
         <div className="lg:col-span-8">
           <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {links.map((link) => (
-                <motion.div key={link.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="group p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all flex items-center justify-between shadow-sm dark:shadow-none">
+                <motion.div 
+                  key={link.id}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="group p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all flex items-center justify-between shadow-sm dark:shadow-none"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-white/40 group-hover:text-slate-900 dark:group-hover:text-white transition-colors shadow-sm dark:shadow-none"><FolderOpen className="w-6 h-6" /></div>
+                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-white/40 group-hover:text-slate-900 dark:group-hover:text-white transition-colors shadow-sm dark:shadow-none">
+                      <FolderOpen className="w-6 h-6" />
+                    </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white">{link.title}</h3>
                       <p className="text-sm text-slate-400 dark:text-white/40">/s/{link.shortId}</p>
                     </div>
                   </div>
+                  
                   <div className="flex items-center gap-2">
-                    <button onClick={() => copyLink(link.shortId)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors" title="Copy Link">{copiedId === link.shortId ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}</button>
-                    <a href={`#/s/${link.shortId}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"><ExternalLink className="w-4 h-4" /></a>
-                    <button onClick={() => handleDeleteClick(link.id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 dark:text-white/40 hover:text-red-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                    <button 
+                      onClick={() => copyLink(link.shortId)}
+                      className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"
+                      title="Copy Link"
+                    >
+                      {copiedId === link.shortId ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                    <a 
+                      href={`/s/${link.shortId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                    <button 
+                      onClick={() => handleDeleteClick(link.id)}
+                      className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 dark:text-white/40 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </motion.div>
               ))}
             </AnimatePresence>
-            {links.length === 0 && <div className="py-20 text-center border-2 border-dashed border-slate-200 dark:border-white/5 rounded-3xl"><p className="text-slate-300 dark:text-white/20">No links created yet.</p></div>}
+
+            {links.length === 0 && (
+              <div className="py-20 text-center border-2 border-dashed border-slate-200 dark:border-white/5 rounded-3xl">
+                <p className="text-slate-300 dark:text-white/20">No links created yet.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
+      {/* Preview Modal */}
       <AnimatePresence>
         {showPreview && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] bg-white dark:bg-black flex flex-col">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-white dark:bg-black flex flex-col"
+          >
             <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md">
-              <div className="flex items-center gap-3"><Layout className="w-5 h-5 text-slate-400 dark:text-white/40" /><span className="font-bold text-slate-900 dark:text-white">Live Preview</span></div>
-              <button onClick={() => setShowPreview(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-colors"><X className="w-6 h-6 text-slate-900 dark:text-white" /></button>
+              <div className="flex items-center gap-3">
+                <Layout className="w-5 h-5 text-slate-400 dark:text-white/40" />
+                <span className="font-bold text-slate-900 dark:text-white">Live Preview</span>
+              </div>
+              <button 
+                onClick={() => setShowPreview(false)}
+                className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-slate-900 dark:text-white" />
+              </button>
             </div>
+            
             <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0a0a0a]">
               <Gallery previewData={{ title: title || "Untitled Gallery" }} />
-              <div className="max-w-5xl mx-auto pb-20 px-4"><div className="p-8 rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/5 text-center"><p className="text-slate-300 dark:text-white/20 font-medium">This is a live preview of how your gallery will look to guests.</p></div></div>
+              
+              <div className="max-w-5xl mx-auto pb-20 px-4">
+                <div className="p-8 rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/5 text-center">
+                  <p className="text-slate-300 dark:text-white/20 font-medium">
+                    This is a live preview of how your gallery will look to guests.
+                  </p>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
