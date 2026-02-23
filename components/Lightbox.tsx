@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, Maximize, Loader2 } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { GDriveFile } from '../types';
-import { formatBytes } from '../lib/utils';
+import { formatBytes, cn } from '../lib/utils';
 
 interface LightboxProps {
   files: GDriveFile[];
@@ -19,7 +19,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
   const file = files[currentIndex];
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
 
-  // Reset trạng thái load khi chuyển ảnh
+  // Reset load state when changing images
   useEffect(() => {
     setIsHighResLoaded(false);
   }, [currentIndex]);
@@ -96,7 +96,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
               
               <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full flex items-center justify-center">
                 <div className="relative w-full h-full flex items-center justify-center">
-                  {/* 1. Thumbnail (Low-res) - Luôn hiển thị mờ cho đến khi ảnh gốc load xong */}
+                  {/* 1. Thumbnail (Low-res) - Blurred until high-res loads */}
                   <img 
                     src={file.thumbnailLink} 
                     alt=""
@@ -118,7 +118,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
                     className="relative max-w-full max-h-full object-contain select-none z-10"
                   />
 
-                  {/* Loading Spinner khi đang nạp ảnh gốc */}
+                  {/* Loading Spinner while high-res is fetching */}
                   {!isHighResLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center z-0">
                       <Loader2 className="w-8 h-8 text-white/20 animate-spin" />
