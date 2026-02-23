@@ -19,7 +19,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
   const file = files[currentIndex];
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
 
-  // Reset load state when changing images
+  // Reset trạng thái khi chuyển sang ảnh khác
   useEffect(() => {
     setIsHighResLoaded(false);
   }, [currentIndex]);
@@ -96,32 +96,34 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
               
               <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full flex items-center justify-center">
                 <div className="relative w-full h-full flex items-center justify-center">
-                  {/* 1. Thumbnail (Low-res) - Blurred until high-res loads */}
+                  {/* 1. Preview Image (s600) - Hiển thị rõ nét ngay lập tức */}
                   <img 
                     src={file.thumbnailLink} 
                     alt=""
                     className={cn(
-                      "absolute max-w-full max-h-full object-contain transition-opacity duration-500 blur-lg scale-105",
+                      "absolute max-w-full max-h-full object-contain transition-opacity duration-700",
                       isHighResLoaded ? "opacity-0" : "opacity-100"
                     )}
                   />
 
-                  {/* 2. High-res Image (Proxy) */}
+                  {/* 2. Full Resolution Image - Fade in đè lên ảnh preview */}
                   <motion.img 
                     key={file.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isHighResLoaded ? 1 : 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                     src={file.webContentLink} 
                     alt={file.name}
                     onLoad={() => setIsHighResLoaded(true)}
                     className="relative max-w-full max-h-full object-contain select-none z-10"
                   />
 
-                  {/* Loading Spinner while high-res is fetching */}
+                  {/* Subtle Loading Indicator - Chỉ hiện khi chưa có ảnh full res */}
                   {!isHighResLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center z-0">
-                      <Loader2 className="w-8 h-8 text-white/20 animate-spin" />
+                    <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                      <div className="bg-black/20 backdrop-blur-sm p-3 rounded-full">
+                        <Loader2 className="w-6 h-6 text-white/50 animate-spin" />
+                      </div>
                     </div>
                   )}
                 </div>
