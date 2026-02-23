@@ -1,15 +1,20 @@
 
 import React from 'react';
-import Gallery from '../../../components/Gallery';
+import Gallery from '@/components/Gallery';
 
 interface PageProps {
   params: Promise<{ shortId: string }>;
 }
 
+/**
+ * GalleryPage là một Server Component trong Next.js 15.
+ * Params là một Promise và cần được awaited.
+ */
 export default async function GalleryPage({ params }: PageProps) {
-  // In Next.js 15, params must be awaited even if not used directly in the server component
-  // to ensure the route is correctly resolved before rendering client components.
-  await params;
+  // Await params để đảm bảo route được resolve chính xác trước khi render Client Component
+  const resolvedParams = await params;
   
+  // Gallery là một Client Component và nó tự sử dụng useParams() để lấy shortId,
+  // nên chúng ta không cần truyền props vào đây.
   return <Gallery />;
 }
