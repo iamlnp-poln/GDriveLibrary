@@ -19,14 +19,14 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
   const file = files[currentIndex];
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
 
-  // Reset trạng thái khi chuyển sang ảnh khác
   useEffect(() => {
     setIsHighResLoaded(false);
   }, [currentIndex]);
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(file.webContentLink!);
+      // Khi download lẻ, ta dùng Proxy để trình duyệt nhận diện đúng tên file và tránh lỗi CORS khi fetch Blob
+      const response = await fetch(`/api/image/${file.id}`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -47,7 +47,6 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-black flex flex-col"
     >
-      {/* Top Bar */}
       <div className="h-16 px-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent z-20">
         <div className="flex items-center gap-4">
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white">
@@ -70,9 +69,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-        {/* Navigation Buttons */}
         <button 
           onClick={onPrev}
           className="absolute left-4 z-20 p-3 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-md transition-colors text-white"
@@ -96,7 +93,6 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
               
               <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full flex items-center justify-center">
                 <div className="relative w-full h-full flex items-center justify-center">
-                  {/* 1. Preview Image (s600) - Hiển thị rõ nét ngay lập tức */}
                   <img 
                     src={file.thumbnailLink} 
                     alt=""
@@ -106,7 +102,6 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
                     )}
                   />
 
-                  {/* 2. Full Resolution Image - Fade in đè lên ảnh preview */}
                   <motion.img 
                     key={file.id}
                     initial={{ opacity: 0 }}
@@ -118,7 +113,6 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
                     className="relative max-w-full max-h-full object-contain select-none z-10"
                   />
 
-                  {/* Subtle Loading Indicator - Chỉ hiện khi chưa có ảnh full res */}
                   {!isHighResLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
                       <div className="bg-black/20 backdrop-blur-sm p-3 rounded-full">
@@ -140,7 +134,6 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, onClose, onNex
         </button>
       </div>
 
-      {/* Bottom Info (Mobile) */}
       <div className="md:hidden p-4 bg-gradient-to-t from-black/80 to-transparent z-20 text-white">
         <h3 className="text-sm font-medium truncate">{file.name}</h3>
         <p className="text-xs text-white/40">{formatBytes(file.size)}</p>

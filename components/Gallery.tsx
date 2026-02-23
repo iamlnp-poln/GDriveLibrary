@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -83,14 +82,19 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         const driveFiles: GDriveFile[] = await filesResponse.json();
         
         const processedFiles = driveFiles.map(file => {
-          const optimizedThumb = file.thumbnailLink 
-            ? file.thumbnailLink.replace(/=s\d+$/, '=s600') 
-            : `/api/image/${file.id}`;
+          /**
+           * THUẬT TOÁN TỐI ƯU BĂNG THÔNG TUYỆT ĐỐI:
+           * Chúng ta lấy phần gốc của thumbnailLink (bỏ phần =s220 ở cuối).
+           * - thumbnailLink: dùng =s1000 để hiện ở Grid (Google gánh load).
+           * - webContentLink: dùng =s0 để hiện ảnh GỐC ở Lightbox (Google gánh load).
+           * Vercel bây giờ chỉ đóng vai trò render HTML/JS, không tốn băng thông cho ảnh.
+           */
+          const baseGoogleUrl = file.thumbnailLink?.replace(/=s\d+$/, '');
 
           return {
             ...file,
-            thumbnailLink: optimizedThumb,
-            webContentLink: `/api/image/${file.id}`
+            thumbnailLink: `${baseGoogleUrl}=s1000`, // Load từ Google CDN
+            webContentLink: `${baseGoogleUrl}=s0`    // Load ảnh GỐC từ Google CDN
           };
         });
         
@@ -124,7 +128,8 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         const zip = new JSZip();
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i];
-          const response = await fetch(file.webContentLink!);
+          // Khi download Zip, ta vẫn phải fetch qua Proxy để tránh lỗi CORS của trình duyệt
+          const response = await fetch(`/api/image/${file.id}`);
           const blob = await response.blob();
           zip.file(file.name, blob);
           setDownloadProgress(Math.round(((i + 1) / selectedFiles.length) * 100));
@@ -136,6 +141,7 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i];
           const link = document.createElement('a');
+          // Download lẻ dùng trực tiếp link Google để tiết kiệm băng thông
           link.href = file.webContentLink!;
           link.setAttribute('download', file.name);
           link.setAttribute('target', '_blank');
