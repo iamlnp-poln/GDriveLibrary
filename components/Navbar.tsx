@@ -50,7 +50,7 @@ export default function Navbar() {
           <div className="h-10 flex items-center">
             <img 
               src="/assets/poln_logo.png" 
-              alt="GDrive Library Logo" 
+              alt="Poln's Gallery Logo" 
               className="h-full w-auto object-contain transition-all"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -58,7 +58,7 @@ export default function Navbar() {
                 if (parent && !parent.querySelector('.fallback-text')) {
                   const span = document.createElement('span');
                   span.className = 'fallback-text font-bold text-lg tracking-tight text-slate-900 dark:text-white';
-                  span.innerText = 'GDrive Library';
+                  span.innerText = "Poln's Gallery";
                   parent.appendChild(span);
                 }
               }}

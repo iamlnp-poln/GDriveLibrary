@@ -9,7 +9,7 @@ import Footer from "../components/Footer";
 const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GDrive Library",
+  title: "Poln's Gallery by @_iamlnp_",
   description: "A minimalist Google Drive gallery library.",
   icons: {
     icon: "/assets/poln_favicon.png",

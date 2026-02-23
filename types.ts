@@ -5,6 +5,7 @@ export interface GDriveLink {
   folderId: string;
   title: string;
   createdAt: number;
+  isPickingMode?: boolean; // Nếu true: không cho tải, có watermark, có nút thả tim
 }
 
 export interface GDriveFile {
