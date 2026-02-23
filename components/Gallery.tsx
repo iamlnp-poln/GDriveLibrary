@@ -23,7 +23,6 @@ interface GalleryProps {
 
 const MOCK_HEIGHTS = [320, 450, 280, 500, 350, 400, 300, 480, 380, 420, 290, 460];
 
-// --- GalleryItem được đưa ra ngoài để tránh lỗi remount khi state cha thay đổi ---
 interface GalleryItemProps {
   file: GDriveFile;
   index: number;
@@ -54,7 +53,7 @@ const GalleryItem = React.memo(({
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: Math.min(index * 0.05, 1) }}
+      transition={{ duration: 0.6, delay: Math.min(index * 0.01, 0.5) }}
       className="relative group cursor-pointer break-inside-avoid mb-4"
       onClick={() => {
         if (isSelectionMode) onToggleSelect(file.id);
@@ -82,34 +81,50 @@ const GalleryItem = React.memo(({
           loading="lazy"
         />
 
+        {/* Filename Overlay - Always visible on hover or if picked/selected */}
+        <div className={cn(
+          "absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 z-20",
+          isLoaded ? "opacity-0 group-hover:opacity-100" : "opacity-0",
+          (isSelected || isPicked) && "opacity-100"
+        )}>
+          <p className="text-white text-[10px] font-medium truncate drop-shadow-sm">
+            {file.name}
+          </p>
+        </div>
+
         {isPickingMode && isLoaded && (
-          <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center opacity-20 select-none overflow-hidden">
-            <div className="rotate-[-45deg] text-slate-900 dark:text-white font-bold text-2xl whitespace-nowrap tracking-[0.5em] uppercase">
+          <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center opacity-10 select-none overflow-hidden">
+            <div className="rotate-[-45deg] text-slate-900 dark:text-white font-bold text-xl whitespace-nowrap tracking-[0.5em] uppercase">
               Poln's Gallery • @_iamlnp_
             </div>
           </div>
         )}
         
+        {/* Interaction Layer */}
         <div className={cn(
-          "absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20",
-          (isSelectionMode || isPicked) && "opacity-100 bg-black/20"
+          "absolute inset-0 transition-opacity duration-300 z-30",
+          (isSelectionMode || isPicked) ? "opacity-100 bg-black/10" : "opacity-0 group-hover:opacity-100 bg-black/5"
         )}>
           {isSelectionMode ? (
-            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all", isSelected ? "bg-white border-white" : "border-white/50")}>
-              {isSelected && <Check className="w-5 h-5 text-black" />}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all", isSelected ? "bg-white border-white" : "border-white/50")}>
+                {isSelected && <Check className="w-5 h-5 text-black" />}
+              </div>
             </div>
           ) : isPickingMode ? (
             <button 
               onClick={(e) => onTogglePick(file.id, e)}
               className={cn(
-                "w-12 h-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all transform hover:scale-110",
+                "absolute top-3 right-3 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all transform hover:scale-110 shadow-lg",
                 isPicked ? "bg-red-500 text-white" : "bg-white/20 text-white border border-white/30"
               )}
             >
-              <Heart className={cn("w-6 h-6", isPicked && "fill-current")} />
+              <Heart className={cn("w-5 h-5", isPicked && "fill-current")} />
             </button>
           ) : (
-            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center"><Grid className="w-5 h-5 text-white" /></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center"><Grid className="w-5 h-5 text-white" /></div>
+            </div>
           )}
         </div>
       </div>
@@ -119,7 +134,6 @@ const GalleryItem = React.memo(({
 
 GalleryItem.displayName = 'GalleryItem';
 
-// --- Component chính ---
 const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPickingMode }) => {
   const params = useParams();
   const shortId = params?.shortId as string;
@@ -148,6 +162,8 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
   useEffect(() => {
     if (shortId && pickedIds.size > 0) {
       localStorage.setItem(`picked_${shortId}`, JSON.stringify(Array.from(pickedIds)));
+    } else if (shortId && pickedIds.size === 0) {
+      localStorage.removeItem(`picked_${shortId}`);
     }
   }, [pickedIds, shortId]);
 
@@ -242,7 +258,6 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
     setDownloadProgress(0);
     const selectedFiles = files.filter(f => selectedIds.has(f.id));
     try {
-      // Chỉ giữ lại chế độ tải Zip cho nhiều ảnh
       const zip = new JSZip();
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
@@ -285,26 +300,17 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-12 pb-32">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="text-4xl font-bold tracking-tight mb-2 text-slate-900 dark:text-white">{linkData?.title}</h1>
-          <p className="text-slate-400 dark:text-white/40 flex items-center gap-2">
-            {files.length} Photos &bull; {isPickingMode ? 'Picking Mode' : 'Download Mode'}
+          <p className="text-slate-400 dark:text-white/40 flex items-center gap-2 text-sm">
+            {files.length} Photos &bull; Poln by{' '}
+            <a href="https://www.instagram.com/_iamlnp_/" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors underline underline-offset-4 font-medium">@_iamlnp_</a>
           </p>
         </motion.div>
         
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-wrap items-center gap-3">
-          {isPickingMode && pickedIds.size > 0 && (
-            <button 
-              onClick={exportPickedList}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
-            >
-              <FileText className="w-4 h-4" />
-              Export List ({pickedIds.size})
-            </button>
-          )}
-
           {!isPickingMode && (
             <>
               <button onClick={() => { setIsSelectionMode(!isSelectionMode); if (isSelectionMode) setSelectedIds(new Set()); }} className={cn("flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm font-medium", isSelectionMode ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-black dark:border-white" : "bg-slate-100 border-slate-200 text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10")}>{isSelectionMode ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}{isSelectionMode ? `Selected (${selectedIds.size})` : "Select"}</button>
@@ -350,6 +356,26 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
           />
         ))}
       </div>
+
+      {/* Floating Export Pill for Picking Mode */}
+      <AnimatePresence>
+        {isPickingMode && pickedIds.size > 0 && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0, x: '-50%' }}
+            animate={{ y: 0, opacity: 1, x: '-50%' }}
+            exit={{ y: 100, opacity: 0, x: '-50%' }}
+            className="fixed bottom-8 left-1/2 z-50 px-4 w-full max-w-xs"
+          >
+            <button 
+              onClick={exportPickedList}
+              className="w-full flex items-center justify-center gap-3 py-4 bg-red-500 text-white font-bold rounded-full shadow-2xl shadow-red-500/40 hover:bg-red-600 transition-all active:scale-95"
+            >
+              <FileText className="w-5 h-5" />
+              Export List ({pickedIds.size})
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {activeImageIndex !== null && (
