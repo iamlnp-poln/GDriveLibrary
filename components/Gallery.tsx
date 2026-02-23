@@ -79,11 +79,18 @@ const Gallery: React.FC<GalleryProps> = ({ previewData }) => {
         
         const driveFiles: GDriveFile[] = await filesResponse.json();
         
-        const processedFiles = driveFiles.map(file => ({
-          ...file,
-          thumbnailLink: `/api/image/${file.id}`,
-          webContentLink: `/api/image/${file.id}`
-        }));
+        const processedFiles = driveFiles.map(file => {
+          // Google Drive thumbnailLink mặc định là s220. Chúng ta tăng lên s600 để grid đẹp hơn nhưng vẫn nhẹ.
+          const optimizedThumb = file.thumbnailLink 
+            ? file.thumbnailLink.replace(/=s\d+$/, '=s600') 
+            : `/api/image/${file.id}`;
+
+          return {
+            ...file,
+            thumbnailLink: optimizedThumb,
+            webContentLink: `/api/image/${file.id}` // Full resolution qua proxy
+          };
+        });
         
         setFiles(processedFiles);
         setLoading(false);

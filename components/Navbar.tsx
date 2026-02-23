@@ -51,7 +51,7 @@ export default function Navbar() {
             <img 
               src="/assets/poln_logo.png" 
               alt="GDrive Library Logo" 
-              className="h-full w-auto object-contain dark:invert-0 invert transition-all"
+              className="h-full w-auto object-contain transition-all"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const parent = e.currentTarget.parentElement;

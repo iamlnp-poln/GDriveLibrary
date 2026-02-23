@@ -11,6 +11,11 @@ const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "GDrive Library",
   description: "A minimalist Google Drive gallery library.",
+  icons: {
+    icon: "/assets/poln_favicon.png",
+    shortcut: "/assets/poln_favicon.png",
+    apple: "/assets/poln_favicon.png",
+  },
 };
 
 export default function RootLayout({
