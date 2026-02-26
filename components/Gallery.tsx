@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -82,9 +81,9 @@ const GalleryItem = React.memo(({
           loading="lazy"
         />
 
-        {/* Filename Overlay - Always visible */}
+        {/* Filename Overlay - Luôn hiển thị để tối ưu cảm ứng */}
         <div className={cn(
-          "absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-300 z-20",
+          "absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 z-20",
           isLoaded ? "opacity-100" : "opacity-0"
         )}>
           <p className="text-white text-[10px] font-medium truncate drop-shadow-md">
@@ -100,30 +99,35 @@ const GalleryItem = React.memo(({
           </div>
         )}
         
-        {/* Interaction Layer */}
+        {/* Interaction Layer - Luôn hiển thị nút để tối ưu cảm ứng */}
         <div className={cn(
-          "absolute inset-0 transition-opacity duration-300 z-30",
-          (isSelectionMode || isPicked) ? "opacity-100 bg-black/10" : "opacity-0 group-hover:opacity-100 bg-black/5"
+          "absolute inset-0 transition-opacity duration-300 z-30 opacity-100",
+          (isSelected || isPicked) ? "bg-black/10" : "bg-transparent"
         )}>
           {isSelectionMode ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all", isSelected ? "bg-white border-white" : "border-white/50")}>
-                {isSelected && <Check className="w-5 h-5 text-black" />}
+            <div className="absolute top-3 right-3">
+              <div className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all shadow-lg backdrop-blur-md",
+                isSelected ? "bg-white border-white text-black" : "bg-black/20 border-white/50 text-white"
+              )}>
+                {isSelected ? <Check className="w-5 h-5" /> : <Circle className="w-4 h-4 opacity-50" />}
               </div>
             </div>
           ) : isPickingMode ? (
             <button 
               onClick={(e) => onTogglePick(file.id, e)}
               className={cn(
-                "absolute top-3 right-3 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all transform hover:scale-110 shadow-lg z-40",
-                isPicked ? "bg-red-500 text-white opacity-100" : "bg-white/20 text-white border border-white/30 opacity-100"
+                "absolute top-3 right-3 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all transform active:scale-90 shadow-lg z-40",
+                isPicked ? "bg-red-500 text-white" : "bg-black/20 text-white border border-white/30"
               )}
             >
               <Heart className={cn("w-5 h-5", isPicked && "fill-current")} />
             </button>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center"><Grid className="w-5 h-5 text-white" /></div>
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-lg border border-white/20">
+                <Grid className="w-5 h-5 text-white" />
+              </div>
             </div>
           )}
         </div>
@@ -312,9 +316,16 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
         
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-wrap items-center gap-3">
           {!isPickingMode && (
-            <>
-              <button onClick={() => { setIsSelectionMode(!isSelectionMode); if (isSelectionMode) setSelectedIds(new Set()); }} className={cn("flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm font-medium", isSelectionMode ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-black dark:border-white" : "bg-slate-100 border-slate-200 text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10")}>{isSelectionMode ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}{isSelectionMode ? `Selected (${selectedIds.size})` : "Select"}</button>
-            </>
+            <button 
+              onClick={() => { setIsSelectionMode(!isSelectionMode); if (isSelectionMode) setSelectedIds(new Set()); }} 
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-sm font-medium", 
+                isSelectionMode ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-black dark:border-white" : "bg-slate-100 border-slate-200 text-slate-700 dark:bg-white/5 dark:border-white/10 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10"
+              )}
+            >
+              {isSelectionMode ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+              {isSelectionMode ? `Selected (${selectedIds.size})` : "Select"}
+            </button>
           )}
           
           {!previewData && <button onClick={handleShare} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors text-sm font-medium text-slate-700 dark:text-white">{copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}{copied ? "Copied" : "Share"}</button>}
@@ -338,7 +349,7 @@ const Gallery: React.FC<GalleryProps> = ({ previewData, isPickingMode: propIsPic
         ))}
       </div>
 
-      {/* Floating Pill for Picking Mode or Download Mode */}
+      {/* Fixed Floating Pill for Picking Mode or Download Mode */}
       <AnimatePresence>
         {((isPickingMode && pickedIds.size > 0) || (!isPickingMode && selectedIds.size > 0)) && (
           <motion.div 

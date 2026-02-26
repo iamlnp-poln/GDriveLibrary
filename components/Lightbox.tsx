@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -67,7 +66,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, isPickingMode,
             <button 
               onClick={onTogglePick}
               className={cn(
-                "flex items-center gap-2 px-6 py-2 rounded-full text-sm font-bold transition-all transform active:scale-95",
+                "flex items-center gap-2 px-6 py-2 rounded-full text-sm font-bold transition-all transform active:scale-95 shadow-lg",
                 isPicked ? "bg-red-500 text-white" : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
               )}
             >
@@ -77,7 +76,7 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, isPickingMode,
           ) : (
             <button 
               onClick={handleDownload}
-              className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-white/90 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-white/90 transition-colors shadow-lg"
             >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Download</span>
@@ -92,8 +91,8 @@ const Lightbox: React.FC<LightboxProps> = ({ files, currentIndex, isPickingMode,
         <TransformWrapper initialScale={1} minScale={0.5} maxScale={4} centerOnInit>
           {({ zoomIn, zoomOut, resetTransform }) => (
             <>
-              {/* Fixed Toolbar Alignment */}
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white">
+              {/* Zoom Toolbar - Căn giữa tuyệt đối */}
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1 p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white shadow-2xl">
                 <button onClick={() => zoomOut()} className="p-2 hover:bg-white/10 rounded-full transition-colors"><ZoomOut className="w-4 h-4" /></button>
                 <button onClick={() => resetTransform()} className="p-2 hover:bg-white/10 rounded-full transition-colors"><Maximize className="w-4 h-4" /></button>
                 <button onClick={() => zoomIn()} className="p-2 hover:bg-white/10 rounded-full transition-colors"><ZoomIn className="w-4 h-4" /></button>
